@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Security Awareness Notice — Simulated Phishing Exercise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Brand + palette */
+    --yellow:#FBCB44;
+    --yellow-soft:#FFF4D6;
+    --yellow-line:#F0D89A;
+    --ink:#15171C;
+    --ink-2:#1F232C;
+    --ink-3:#2B3140;
+    --slate:#5C6475;
+    --slate-light:#8A91A0;
+    --page:#F2F3F6;
+    --card:#FFFFFF;
+    --card-soft:#F7F8FA;
+    --line:#E2E5EB;
+    --crimson:#B4232F;
+    --crimson-dark:#8E1A24;
+    --crimson-soft:#FBEDEE;
+    --crimson-line:#EFC9CC;
+    --forest:#16704B;
+    --forest-soft:#EBF5F0;
+    --forest-line:#C3E2D3;
+    --r:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-size:14px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,h5{font-family:'Archivo',system-ui,sans-serif;letter-spacing:-0.011em;margin:0;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  img{max-width:100%;display:block;}
+  a{color:var(--crimson-dark);}
+  button{font-family:inherit;}
+
+  /* ============ Shell ============ */
+  .shell{display:flex;min-height:100vh;align-items:stretch;}
+
+  /* ============ Sidebar ============ */
+  .sidebar{
+    width:286px;flex:0 0 286px;
+    background:var(--ink);
+    display:flex;flex-direction:column;
+    padding:26px 22px 22px;
+  }
+  .brand{display:flex;align-items:flex-start;gap:16px;padding-bottom:26px;border-bottom:1px solid rgba(255,255,255,.1);}
+  .brand-logo{background:#fff;border-radius:5px;padding:7px 9px;flex:0 0 auto;}
+  .brand-logo img{height:26px;width:auto;}
+  .brand-text{
+    font-family:'Archivo',sans-serif;font-size:10.5px;font-weight:700;
+    letter-spacing:.13em;line-height:1.55;color:#fff;text-transform:uppercase;
+    padding-top:2px;
+  }
+  .brand-text span{display:block;color:var(--yellow);}
+
+  .nav-label{
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;
+    color:var(--slate-light);text-transform:uppercase;margin:26px 0 12px 2px;
+  }
+  .nav{display:flex;flex-direction:column;gap:6px;}
+  .nav-btn{
+    display:flex;align-items:center;gap:13px;
+    width:100%;padding:13px 14px;border:1px solid rgba(255,255,255,.09);
+    background:rgba(255,255,255,.035);border-radius:var(--r);
+    cursor:pointer;text-align:left;transition:background .15s ease,border-color .15s ease;
+  }
+  .nav-btn .n{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--slate-light);background:rgba(255,255,255,.07);
+    border-radius:5px;padding:4px 7px;flex:0 0 auto;transition:all .15s ease;
+  }
+  .nav-btn .t{font-size:13.5px;font-weight:600;color:#D6DAE2;transition:color .15s ease;}
+  .nav-btn .done{margin-left:auto;color:var(--yellow);font-size:12px;opacity:0;transition:opacity .2s ease;}
+  .nav-btn.visited .done{opacity:1;}
+  .nav-btn:hover:not(.active){background:rgba(255,255,255,.075);}
+  .nav-btn.active{background:var(--yellow);border-color:var(--yellow);}
+  .nav-btn.active .n{background:rgba(0,0,0,.13);color:var(--ink);}
+  .nav-btn.active .t{color:var(--ink);}
+  .nav-btn.active .done{color:var(--ink);}
+
+  .sidebar-foot{margin-top:auto;padding-top:22px;border-top:1px solid rgba(255,255,255,.1);}
+  .progress-label{
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;
+    color:var(--slate-light);text-transform:uppercase;margin-bottom:9px;
+  }
+  .progress-track{height:4px;background:rgba(255,255,255,.11);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;width:33%;background:var(--yellow);border-radius:99px;transition:width .3s ease;}
+  .progress-count{font-size:11.5px;color:var(--slate-light);margin-top:9px;}
+
+  /* ============ Main ============ */
+  .main{flex:1 1 auto;min-width:0;padding:24px 30px 26px;display:flex;flex-direction:column;gap:16px;}
+
+  /* --- Hero notice --- */
+  .notice{
+    background:var(--ink);border-radius:var(--r);overflow:hidden;
+    box-shadow:0 1px 3px rgba(21,23,28,.09);
+  }
+  .hazard{
+    height:7px;
+    background:repeating-linear-gradient(135deg,var(--crimson) 0 14px,var(--ink-3) 14px 28px);
+  }
+  .notice-inner{padding:26px 32px 28px;display:flex;gap:22px;align-items:flex-start;}
+  .notice-icon{
+    width:46px;height:46px;flex:0 0 auto;border-radius:9px;
+    background:rgba(255,90,90,.15);color:#FF6B6B;border:1px solid rgba(255,90,90,.35);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:700;line-height:1;
+  }
+  .notice-body{flex:1 1 auto;min-width:0;}
+  .notice-eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;
+    color:#FF6B6B;text-transform:uppercase;margin-bottom:9px;
+  }
+  .notice h1{
+    font-size:clamp(26px,3.4vw,40px);font-weight:800;color:#FF5A5A;
+    line-height:1.06;letter-spacing:-0.025em;text-transform:uppercase;
+  }
+  .notice p{
+    margin:13px 0 0;font-size:14.5px;color:#B7BDC9;max-width:860px;
+  }
+  .notice p strong{color:#fff;font-weight:700;}
+  .notice p .warn{color:#FF7A7A;font-weight:600;}
+  .notice p .warn a{color:#FF9A9A;font-weight:700;text-decoration:underline;}
+
+  /* --- Policy cards --- */
+  .policy{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:900px){.policy{grid-template-columns:1fr;}}
+  .p-card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:20px 22px;position:relative;
+  }
+  .p-card .flag{
+    position:absolute;top:-9px;left:22px;
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.11em;
+    padding:3px 9px;border-radius:99px;text-transform:uppercase;display:none;
+  }
+  .p-card.on .flag{display:inline-block;}
+  .p-card .head{display:flex;align-items:center;gap:11px;margin-bottom:9px;}
+  .p-card .idx{
+    width:24px;height:24px;border-radius:6px;flex:0 0 auto;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .p-card h3{font-size:14.5px;font-weight:700;}
+  .p-card p{margin:0;font-size:13.5px;color:var(--slate);}
+
+  /* First-occurrence card */
+  .p-card.first .idx{background:var(--yellow-soft);color:var(--ink);border:1px solid var(--yellow-line);}
+  .p-card.first.on{border-color:var(--yellow);background:#FFFDF6;box-shadow:0 0 0 1px var(--yellow) inset;}
+  .p-card.first.on .idx{background:var(--yellow);border-color:var(--yellow);}
+  .p-card.first .flag{background:var(--yellow);color:var(--ink);}
+
+  /* Repeat-occurrence card */
+  .p-card.repeat .idx{background:var(--crimson-soft);color:var(--crimson-dark);border:1px solid var(--crimson-line);}
+  .p-card.repeat h3{color:var(--crimson-dark);}
+  .p-card.repeat.on{border-color:var(--crimson);background:var(--crimson-soft);box-shadow:0 0 0 1px var(--crimson) inset;}
+  .p-card.repeat.on .idx{background:var(--crimson);color:#fff;border-color:var(--crimson);}
+  .p-card.repeat .flag{background:var(--crimson);color:#fff;}
+
+  /* --- Content panel --- */
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:30px 34px 34px;flex:1 1 auto;
+  }
+  .panel-head{padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:22px;}
+  .panel-head .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;
+    color:var(--slate-light);text-transform:uppercase;margin-bottom:7px;
+  }
+  .panel-head h2{font-size:21px;font-weight:700;}
+  .panel-head p{margin:6px 0 0;font-size:14px;color:var(--slate);max-width:820px;}
+  .tab{display:none;}
+  .tab.on{display:block;}
+  .intro{font-size:14.5px;color:var(--ink-3);max-width:900px;margin:0;}
+
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px;}
+  @media (max-width:1000px){.g3{grid-template-columns:1fr;}}
+  .tile{border:1px solid var(--line);border-radius:9px;padding:19px 20px;background:var(--card-soft);}
+  .tile .tnum{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.11em;
+    color:var(--slate-light);text-transform:uppercase;
+  }
+  .tile h4{font-size:14.5px;font-weight:700;margin:9px 0 7px;}
+  .tile p{margin:0;font-size:13px;color:var(--slate);}
+
+  .subhead{
+    font-family:'Archivo',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--slate);margin:28px 0 12px;
+  }
+  ul.pl{margin:0;padding-left:20px;}
+  ul.pl li{font-size:14px;margin-bottom:8px;color:var(--ink-3);}
+  ul.pl li::marker{color:var(--yellow);font-weight:700;}
+
+  /* --- Email sample --- */
+  .split{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;margin-top:6px;align-items:start;}
+  @media (max-width:1080px){.split{grid-template-columns:1fr;}}
+
+  .mail{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden;}
+  .mail-bar{
+    display:flex;align-items:center;gap:7px;padding:10px 14px;
+    background:var(--card-soft);border-bottom:1px solid var(--line);
+  }
+  .mail-bar .dot{width:8px;height:8px;border-radius:50%;background:var(--line);}
+  .mail-bar .kebab{
+    margin-left:auto;display:inline-flex;align-items:center;gap:7px;
+    background:#fff;border:1px solid var(--line);border-radius:6px;
+    padding:5px 10px;font-size:11px;font-weight:600;color:var(--slate);
+  }
+  .mail-head{padding:15px 18px 11px;border-bottom:1px solid var(--line);}
+  .mail-head .r{display:flex;gap:10px;font-size:12.5px;margin-bottom:6px;align-items:baseline;}
+  .mail-head .r:last-child{margin-bottom:0;}
+  .mail-head .r .k{color:var(--slate-light);width:48px;flex:0 0 auto;font-size:11.5px;}
+  .mail-head .r .v{color:var(--ink);font-weight:500;}
+  .mail-body{padding:17px 18px 20px;}
+  .mail-body p{margin:0 0 11px;font-size:13.5px;color:var(--ink-3);}
+  .mail-link{color:#1A56DB;text-decoration:underline;word-break:break-all;}
+  .mail-cta{
+    display:inline-block;background:#1A56DB;color:#fff;text-decoration:none;
+    padding:9px 17px;border-radius:5px;font-weight:700;font-size:12.5px;margin:5px 0 4px;
+  }
+
+  .mk{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:19px;height:19px;border-radius:50%;
+    background:var(--crimson);color:#fff;border:none;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;
+    cursor:pointer;vertical-align:middle;margin:0 0 0 5px;flex:0 0 auto;
+    transition:transform .13s ease,background .13s ease;
+  }
+  .mk:hover{transform:scale(1.13);}
+  .mk.on{background:var(--ink);}
+
+  .flags{display:flex;flex-direction:column;gap:8px;}
+  .flag-row{
+    display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;
+    padding:13px 15px;border:1px solid var(--line);border-radius:9px;
+    background:var(--card-soft);cursor:pointer;transition:border-color .13s ease,background .13s ease;
+  }
+  .flag-row:hover{background:#EFF1F5;}
+  .flag-row.on{border-color:var(--crimson);background:var(--crimson-soft);}
+  .flag-row .b{
+    width:20px;height:20px;border-radius:50%;background:var(--crimson);color:#fff;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px;
+  }
+  .flag-row h5{font-size:13.5px;font-weight:700;margin-bottom:3px;}
+  .flag-row p{margin:0;font-size:12.5px;color:var(--slate);}
+
+  .report{
+    margin-top:20px;border:1px solid var(--forest-line);border-left:4px solid var(--forest);
+    border-radius:9px;background:var(--forest-soft);padding:19px 22px;
+  }
+  .report h4{font-size:14px;font-weight:700;color:var(--forest);margin-bottom:11px;}
+  .report ol{margin:0;padding-left:20px;}
+  .report ol li{font-size:13.5px;margin-bottom:6px;color:var(--ink-3);}
+  .report ol li b{color:var(--forest);}
+  .report .caution{
+    margin-top:12px;padding-top:12px;border-top:1px solid var(--forest-line);
+    font-size:13px;font-weight:600;color:var(--crimson-dark);
+  }
+
+  /* --- Case studies --- */
+  .cases{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4px;}
+  @media (max-width:1000px){.cases{grid-template-columns:1fr;}}
+  .case{
+    border:1px solid var(--line);border-top:3px solid var(--crimson);border-radius:9px;
+    background:var(--card-soft);padding:19px 20px;display:flex;flex-direction:column;gap:9px;
+  }
+  .case .yr{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--slate-light);text-transform:uppercase;}
+  .case h4{font-size:15px;font-weight:700;}
+  .case .amt{font-family:'Archivo',sans-serif;font-size:23px;font-weight:800;color:var(--crimson-dark);letter-spacing:-0.02em;line-height:1;}
+  .case .tag{
+    align-self:flex-start;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--crimson-dark);background:var(--crimson-soft);border:1px solid var(--crimson-line);
+    padding:3px 8px;border-radius:5px;
+  }
+  .case p{margin:0;font-size:12.5px;color:var(--slate);}
+  .case .src{margin-top:auto;padding-top:4px;font-size:11px;color:var(--slate-light);}
+  .case .src a{color:var(--slate-light);}
+
+  .impacts{display:flex;flex-direction:column;gap:12px;margin-top:6px;}
+  .impact{display:flex;gap:13px;align-items:flex-start;}
+  .impact .i{
+    width:22px;height:22px;border-radius:5px;background:var(--ink);color:var(--yellow);
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px;
+  }
+  .impact p{margin:0;font-size:14px;color:var(--ink-3);}
+  .impact b{font-weight:700;color:var(--ink);}
+
+  /* --- Per-section nav footer --- */
+  .sec-foot{
+    margin-top:26px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .sec-foot .spacer{flex:1 1 auto;}
+  .sec-msg{
+    font-size:13px;font-weight:600;color:var(--forest);display:none;
+    margin-top:12px;text-align:right;
+  }
+  .sec-msg.on{display:block;}
+  .sec-msg::before{content:"\2713  ";}
+  .next-btn{
+    background:var(--ink);color:#fff;border:none;border-radius:8px;
+    padding:12px 22px;font-size:13px;font-weight:700;cursor:pointer;flex:0 0 auto;
+    transition:background .15s ease;
+  }
+  .next-btn:hover{background:var(--ink-3);}
+  .next-btn .arw{margin-left:7px;}
+  .prev-btn{
+    background:none;color:var(--slate);border:1px solid var(--line);border-radius:8px;
+    padding:12px 20px;font-size:13px;font-weight:600;cursor:pointer;flex:0 0 auto;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .prev-btn:hover{background:var(--card-soft);border-color:var(--slate-light);color:var(--ink);}
+  .prev-btn .arw{margin-right:7px;}
+
+  /* --- Quiz embed --- */
+  .quiz-note{
+    display:flex;gap:13px;align-items:center;
+    background:var(--yellow-soft);border:1px solid var(--yellow-line);
+    border-radius:9px;padding:15px 18px;margin-bottom:20px;
+  }
+  .quiz-note .qi{
+    width:26px;height:26px;flex:0 0 auto;border-radius:6px;background:var(--yellow);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;
+  }
+  .quiz-note p{margin:0;font-size:13.5px;color:var(--ink-3);flex:1 1 auto;}
+  .quiz-note b{font-weight:700;color:var(--ink);}
+  .retake-btn{
+    flex:0 0 auto;background:#fff;color:var(--ink);border:1px solid var(--yellow-line);
+    border-radius:8px;padding:9px 16px;font-size:12.5px;font-weight:700;cursor:pointer;
+    transition:background .15s ease,border-color .15s ease;white-space:nowrap;
+  }
+  .retake-btn:hover{background:var(--yellow);border-color:var(--yellow);}
+  @media (max-width:640px){.quiz-note{flex-wrap:wrap;} .retake-btn{width:100%;}}
+  .quiz-frame{
+    display:block;
+    width:100%;
+    height:calc(100vh - 120px);
+    min-height:720px;
+    border:1px solid var(--line);border-radius:9px;background:#fff;
+  }
+  .quiz-fallback{margin-top:12px;font-size:13px;color:var(--slate);}
+
+  /* --- Acknowledgement --- */
+  .ack, .ack-inline{
+    background:var(--card);border:1px solid var(--line);border-left:4px solid var(--yellow);
+    border-radius:var(--r);padding:22px 26px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  }
+  .ack-inline{margin-top:20px;background:var(--card-soft);}
+  .ack h3, .ack-inline h3{font-size:15.5px;font-weight:700;margin-bottom:4px;}
+  .ack p, .ack-inline p{margin:0;font-size:13.5px;color:var(--slate);max-width:620px;}
+  .ack .done-msg, .ack-inline .done-msg{display:none;margin-top:8px;font-size:13px;font-weight:600;color:var(--forest);}
+  .ack .done-msg.on, .ack-inline .done-msg.on{display:block;}
+  .ack-btn{
+    background:var(--ink);color:#fff;border:none;border-radius:8px;
+    padding:13px 24px;font-size:13.5px;font-weight:700;cursor:pointer;flex:0 0 auto;
+    transition:background .15s ease;
+  }
+  .ack-btn:hover{background:var(--ink-3);}
+  .ack-btn:disabled{background:var(--forest);cursor:default;}
+
+  footer{
+    text-align:center;font-size:11.5px;color:var(--slate-light);
+    padding:4px 10px 0;line-height:1.7;
+  }
+  footer a{color:var(--slate);}
+
+  @media (max-width:820px){
+    .shell{flex-direction:column;}
+    .sidebar{width:100%;flex:0 0 auto;padding:20px;}
+    .nav{flex-direction:row;overflow-x:auto;}
+    .nav-btn{width:auto;white-space:nowrap;}
+    .sidebar-foot{display:none;}
+    .main{padding:18px 18px 22px;}
+    .notice-inner{padding:22px 20px;flex-direction:column;gap:16px;}
+    .panel{padding:22px 20px 26px;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+  :focus-visible{outline:2px solid var(--crimson);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <img src="https://images.squarespace-cdn.com/content/v1/626617bf7929cb1429c4fde3/3bf1d17a-7caf-4a50-a659-a0e4f57e432d/CARSOME_Logo_Black_With_Sy_Bg.jpg" alt="Carsome">
+      </div>
+      <div class="brand-text">
+        Cybersecurity<br>
+        <span>Phishing Awareness</span>
+        Program
+      </div>
+    </div>
+
+    <div class="nav-label">Learning modules</div>
+    <nav class="nav">
+      <button class="nav-btn active visited" data-tab="1" onclick="showTab(this)">
+        <span class="n">01</span><span class="t">What is phishing</span><span class="done">&#10003;</span>
+      </button>
+      <button class="nav-btn" data-tab="2" onclick="showTab(this)">
+        <span class="n">02</span><span class="t">How to spot &amp; report it</span><span class="done">&#10003;</span>
+      </button>
+      <button class="nav-btn" data-tab="3" onclick="showTab(this)">
+        <span class="n">03</span><span class="t">Business risk</span><span class="done">&#10003;</span>
+      </button>
+      <button class="nav-btn" data-tab="4" onclick="showTab(this)">
+        <span class="n">04</span><span class="t">Quiz</span><span class="done">&#10003;</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="progress-label">Review progress</div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-count" id="progressCount">1 of 4 sections viewed</div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+
+    <!-- Hero notice -->
+    <section class="notice">
+      <div class="hazard"></div>
+      <div class="notice-inner">
+        <div class="notice-icon">&#9888;</div>
+        <div class="notice-body">
+          <div class="notice-eyebrow">Security awareness notice</div>
+          <h1>You've been phished</h1>
+          <p><strong>You clicked a link in a simulated phishing email.</strong> This was a test run by the Carsome Cybersecurity team as part of our ongoing awareness program. Nothing has been compromised and no data has been lost. <span class="warn">But if this had been a real attack, this one click could have been enough to give an attacker your account or your device. <a href="#" onclick="showTab(document.querySelector('.nav-btn[data-tab=&quot;3&quot;]'));return false;">See what a real attack can cost</a></span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Policy cards -->
+    <section class="policy">
+      <div class="p-card first on" id="cardFirst">
+        <span class="flag">Applies to you</span>
+        <div class="head">
+          <span class="idx">1</span>
+          <h3>If this is your first click</h3>
+        </div>
+        <p>Please review the three sections of awareness material using the navigation on the left, then complete the quiz. Work through each section and confirm as you go.</p>
+      </div>
+      <div class="p-card repeat" id="cardRepeat">
+        <span class="flag">Applies to you</span>
+        <div class="head">
+          <span class="idx">2+</span>
+          <h3>If this is your second click or more</h3>
+        </div>
+        <p>Punitive action will be taken. Your reporting manager and Human Resources will be notified.</p>
+      </div>
+    </section>
+
+    <!-- Content panel -->
+    <section class="panel">
+
+      <!-- ---------- TAB 1 ---------- -->
+      <div class="tab on" data-tab="1">
+        <div class="panel-head">
+          <div class="eyebrow">Section 01</div>
+          <h2>What is phishing</h2>
+          <p>Phishing is the most common way attackers gain access to a company's systems. Understanding how these emails work is your best defense against them.</p>
+        </div>
+
+        <p class="intro">Phishing is a fake email or message that pretends to come from someone you trust, usually IT, a manager, a customer, or a well-known company. Its goal is to get you to give up your password, approve a payment, or open a malicious file. These emails are sent to many people at once, and the attacker only needs one person to respond.</p>
+
+        <div class="g3">
+          <div class="tile">
+            <div class="tnum">Tactic 01</div>
+            <h4>Sense of urgency</h4>
+            <p>Tight deadlines, threats of account suspension, or warnings of lost access are used to rush you into acting before you stop to check.</p>
+          </div>
+          <div class="tile">
+            <div class="tnum">Tactic 02</div>
+            <h4>Impersonating someone you trust</h4>
+            <p>The sender poses as IT support, a manager, a finance contact, or a courier, so the request feels normal and you are less likely to question it.</p>
+          </div>
+          <div class="tile">
+            <div class="tnum">Tactic 03</div>
+            <h4>Stealing your credentials</h4>
+            <p>The goal is almost always the same: your login details, an approved payment, or a malicious attachment that gives the attacker access to your device.</p>
+          </div>
+        </div>
+
+        <div class="subhead">Key points to remember</div>
+        <ul class="pl">
+          <li>One stolen password can be enough to give an attacker access to company systems, shared drives, and internal messages.</li>
+          <li>On a phone, the sender address and links are often hidden or cut off. Be extra careful when checking email on mobile.</li>
+          <li>If a message is unexpected, rushed, or doesn't match the normal process, confirm it another way, a call or message to a known number before you act.</li>
+          <li>Taking a moment to verify is never a problem. A genuine request will still be valid after you have confirmed it.</li>
+        </ul>
+
+        <div class="sec-foot">
+          <div class="spacer"></div>
+          <button class="next-btn" onclick="completeSection(1)">Next Section <span class="arw">&rarr;</span></button>
+        </div>
+      </div>
+
+      <!-- ---------- TAB 2 ---------- -->
+      <div class="tab" data-tab="2">
+        <div class="panel-head">
+          <div class="eyebrow">Section 02</div>
+          <h2>How to spot &amp; report it</h2>
+          <p>Select any numbered marker to see what gave it away as a fake.</p>
+        </div>
+
+        <div class="split">
+          <!-- Sample email -->
+          <div class="mail">
+            <div class="mail-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span class="kebab">&#8942; Report as phishing <button class="mk" data-flag="7">7</button></span>
+            </div>
+            <div class="mail-head">
+              <div class="r">
+                <span class="k">From</span>
+                <span class="v">Carsome IT &lt;it-department@carsomes.com&gt;<button class="mk" data-flag="1">1</button></span>
+              </div>
+              <div class="r">
+                <span class="k">To</span>
+                <span class="v">you@carsome.com</span>
+              </div>
+              <div class="r">
+                <span class="k">Subject</span>
+                <span class="v">URGENT: Your password expires in 2 hours - Action Required<button class="mk" data-flag="2">2</button></span>
+              </div>
+            </div>
+            <div class="mail-body">
+              <p style="text-align:center;margin:0 0 14px;">
+                <span style="display:inline-block;background:#FFDF00;color:#000;font-weight:700;font-size:13px;padding:6px 13px;border-radius:3px;font-family:'Archivo',sans-serif;">CARSOME<button class="mk" data-flag="3">3</button></span>
+              </p>
+              <p>Dear User,<button class="mk" data-flag="4">4</button></p>
+              <p>Our system has detect that your CARSOME email password will be expiring in 2 hours from now.<button class="mk" data-flag="5">5</button></p>
+              <p style="background:#fce8e6;border:1px solid #d93025;border-radius:4px;padding:11px 13px;color:#d93025;font-size:12.5px;margin:0 0 12px;"><b>&#9888; Immediate action required to avoid account suspension.</b><br><span style="color:#333;">Failure to update your password within the specified time will result your account to be permanently locked.</span></p>
+              <p><a class="mail-cta" href="#" onclick="return false;">Reset Password Now &rarr;</a><button class="mk" data-flag="6">6</button></p>
+              <p style="font-size:12px;color:var(--slate-light);margin:0;">Regards,<br>IT Service Desk · CARSOME IT Department</p>
+            </div>
+          </div>
+
+          <!-- Indicators -->
+          <div class="flags" id="flags">
+            <button class="flag-row" data-flag="1">
+              <span class="b">1</span>
+              <span><h5>Sender domain spoofing (lookalike domain)</h5><p>"carsomes.com" is not our domain, the real one is carsome.com. Attackers register lookalike domains with an extra letter to fool you. Always open the display name and check the full address.</p></span>
+            </button>
+            <button class="flag-row" data-flag="2">
+              <span class="b">2</span>
+              <span><h5>Sense of urgency</h5><p>A two-hour deadline is meant to panic you into clicking before you check. Real password resets don't work like this.</p></span>
+            </button>
+            <button class="flag-row" data-flag="3">
+              <span class="b">3</span>
+              <span><h5>Fake branding</h5><p>Anyone can copy a logo. A yellow "CARSOME" badge does not prove the email is from us, the sender address and links matter far more than the branding.</p></span>
+            </button>
+            <button class="flag-row" data-flag="4">
+              <span class="b">4</span>
+              <span><h5>Generic greeting</h5><p>Real Carsome and Google Workspace emails address you by name. "Dear User" means it was sent to many people at once.</p></span>
+            </button>
+            <button class="flag-row" data-flag="5">
+              <span class="b">5</span>
+              <span><h5>Poor spelling and grammar</h5><p>"Our system has detect" and "result your account to be locked" are basic mistakes. Official IT emails are checked before they go out.</p></span>
+            </button>
+            <button class="flag-row" data-flag="6">
+              <span class="b">6</span>
+              <span><h5>The button hides its real destination</h5><p>A button can display one thing and link to another. Hover over it first and check the address that appears. On mobile, press and hold to preview.</p></span>
+            </button>
+            <button class="flag-row" data-flag="7">
+              <span class="b">7</span>
+              <span><h5>This is where you report it</h5><p>Gmail has a built-in report option in the three-dot menu of every email. The steps are below.</p></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="report">
+          <h4>Reporting procedure — Gmail</h4>
+          <ol>
+            <li>Open the suspicious email.</li>
+            <li>Select the <b>three dots (&#8942;)</b> in the top-right corner of the message.</li>
+            <li>Select <b>Report as Phishing</b>.</li>
+          </ol>
+          <div class="caution">Do not click any links and do not open any attachments first. Report the email exactly as you received it.</div>
+        </div>
+
+        <div class="sec-foot">
+          <button class="prev-btn" onclick="gotoSection(1)"><span class="arw">&larr;</span> Previous Section</button>
+          <div class="spacer"></div>
+          <button class="next-btn" onclick="completeSection(2)">Next Section <span class="arw">&rarr;</span></button>
+        </div>
+      </div>
+
+      <!-- ---------- TAB 3 ---------- -->
+      <div class="tab" data-tab="3">
+        <div class="panel-head">
+          <div class="eyebrow">Section 03</div>
+          <h2>Business risk</h2>
+          <p>These are recent, real incidents at organizations in Malaysia and the region. In each one, the problem started with a single person acting on a fake message.</p>
+        </div>
+
+        <div class="cases">
+          <div class="case">
+            <div class="yr">2025 · Malaysia Airports Holdings Berhad</div>
+            <div class="amt">USD 10M</div>
+            <span class="tag">Ransomware</span>
+            <h4>Ten-hour disruption at KLIA</h4>
+            <p>On 23 March 2025, systems at Kuala Lumpur International Airport were disrupted for more than ten hours, affecting flight information displays, check-in counters, and baggage handling, with staff reverting to manual operations. The Prime Minister confirmed a USD 10 million ransom demand, which the Government refused. The Qilin ransomware group later claimed responsibility. The initial access method has not been publicly disclosed.</p>
+            <div class="src">Source: <a href="https://www.bernama.com/en/news.php/?id=2406528" target="_blank" rel="noopener">Bernama</a> · <a href="https://www.darkreading.com/cyberattacks-data-breaches/malaysian-airport-cyber-disruption-warning-asia" target="_blank" rel="noopener">Dark Reading</a></div>
+          </div>
+          <div class="case">
+            <div class="yr">2024 · Arup, Hong Kong office</div>
+            <div class="amt">USD 25.6M</div>
+            <span class="tag">Phishing &amp; deepfake</span>
+            <h4>A phishing email, then a fabricated video call</h4>
+            <p>A finance employee received an email purporting to be from the group chief financial officer requesting a confidential transaction. The employee correctly suspected phishing and requested a video call to verify. Every other participant on that call was an AI-generated deepfake of a colleague he recognized. Reassured, he executed fifteen transfers totaling USD 25.6 million.</p>
+            <div class="src">Source: <a href="https://www.cnn.com/2024/05/16/tech/arup-deepfake-scam-loss-hong-kong-intl-hnk" target="_blank" rel="noopener">CNN</a></div>
+          </div>
+          <div class="case">
+            <div class="yr">2023–2025 · Malaysia, national figures</div>
+            <div class="amt">RM 7.5M</div>
+            <span class="tag">Business email compromise</span>
+            <h4>Losses across Malaysian companies</h4>
+            <p>Malaysia recorded losses exceeding RM 7.5 million to business email compromise between 2023 and the first half of 2025, alongside 64,778 phishing attempts directed at Malaysian companies, an average of more than 5,300 per month during 2024, and the third-highest volume in South-East Asia. Separately, MyCERT reported that phishing accounted for 68 percent of all fraud incidents reported in Q1 2025.</p>
+            <div class="src">Source: <a href="https://themalaysianreserve.com/2025/07/07/malaysia-suffers-over-rm7-5m-in-business-email-scam-losses-since-2023-kaspersky/" target="_blank" rel="noopener">The Malaysian Reserve (Kaspersky)</a> · <a href="https://www.mycert.org.my/portal/advisory?id=SR-030.062025" target="_blank" rel="noopener">MyCERT</a></div>
+          </div>
+        </div>
+
+        <div class="subhead">Relevance to Carsome</div>
+        <div class="impacts">
+          <div class="impact">
+            <span class="i">01</span>
+            <p><b>Customer and dealer data.</b> Carsome holds personal, transactional, and payment information across multiple markets. A compromised account provides a direct route to that data.</p>
+          </div>
+          <div class="impact">
+            <span class="i">02</span>
+            <p><b>Operational continuity.</b> As demonstrated at KLIA, an intrusion affecting core systems is capable of forcing an organization into manual operations within hours, in full public view.</p>
+          </div>
+          <div class="impact">
+            <span class="i">03</span>
+            <p><b>Regulatory obligation.</b> The Personal Data Protection (Amendment) Act 2024 introduced mandatory breach notification and a required Data Protection Officer, both effective 1 June 2025. Equivalent obligations apply in the other markets in which we operate.</p>
+          </div>
+          <div class="impact">
+            <span class="i">04</span>
+            <p><b>Verification must extend beyond email.</b> The Arup case demonstrates that a video call is no longer sufficient confirmation of identity. Verify unexpected financial or access requests through a known contact number and established process.</p>
+          </div>
+          <div class="impact">
+            <span class="i">05</span>
+            <p><b>This is a local threat, not a distant one.</b> Malaysian companies are subject to thousands of phishing attempts every month, and phishing accounts for the majority of all fraud incidents reported nationally.</p>
+          </div>
+        </div>
+
+        <div class="sec-foot">
+          <button class="prev-btn" onclick="gotoSection(2)"><span class="arw">&larr;</span> Previous Section</button>
+          <div class="spacer"></div>
+          <button class="next-btn" onclick="completeSection(3)">Next Section <span class="arw">&rarr;</span></button>
+        </div>
+      </div>
+
+      <!-- ---------- TAB 4 : QUIZ ---------- -->
+      <div class="tab" data-tab="4">
+        <div class="panel-head">
+          <div class="eyebrow">Section 04</div>
+          <h2>Quiz</h2>
+          <p>Complete the short quiz below to finish this exercise. A passing mark of 14/15 is required. Your response is recorded by the Cybersecurity team.</p>
+        </div>
+
+        <div class="quiz-note">
+          <span class="qi">&#9998;</span>
+          <p><b>Final step.</b> Answer every question and submit the form below. The passing mark is <b>14/15</b> — if you do not pass, you are required to retake the quiz. If the quiz does not load, <a href="https://docs.google.com/forms/d/e/1FAIpQLSdPnZjM6BtdI7OTFYCKFg4K0CV0jLlxBzLzifMBW3tvoFCyxg/viewform?usp=dialog" target="_blank" rel="noopener">open it in a new tab</a>.</p>
+          <button class="retake-btn" id="retakeBtn" onclick="retakeQuiz()">&#8635; Retake quiz</button>
+        </div>
+
+        <iframe
+          id="quizFrame"
+          class="quiz-frame"
+          src="https://docs.google.com/forms/d/e/1FAIpQLSdPnZjM6BtdI7OTFYCKFg4K0CV0jLlxBzLzifMBW3tvoFCyxg/viewform?embedded=true"
+          frameborder="0" marginheight="0" marginwidth="0"
+          title="Phishing awareness quiz">Loading&hellip;</iframe>
+
+        <div class="sec-foot">
+          <button class="prev-btn" onclick="gotoSection(3)"><span class="arw">&larr;</span> Previous Section</button>
+          <div class="spacer"></div>
+        </div>
+
+        <div class="ack-inline">
+          <div>
+            <h3>Acknowledgement</h3>
+            <p>By confirming, you record that you have reviewed all three sections and completed the quiz.</p>
+            <div class="done-msg" id="ackDone">&#10003; Acknowledgement recorded. Thank you for completing this exercise.</div>
+          </div>
+          <button class="ack-btn" id="ackBtn" onclick="acknowledge()">Complete Module</button>
+        </div>
+      </div>
+
+    </section>
+
+    <footer>
+      Carsome Cybersecurity Team &middot; This is a controlled internal training exercise and not a genuine attack.<br>
+      For questions, raise a ticket with the Cybersecurity team on Jira or contact <a href="mailto:security@carsome.com">security@carsome.com</a>.
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  /* ---------- Tabs + progress ---------- */
+  var TAB_COUNT = 4;
+  var visited = { '1': true };
+
+  function showTab(btn){
+    var tab = btn.dataset.tab;
+    visited[tab] = true;
+    document.querySelectorAll('.nav-btn').forEach(function(b){
+      b.classList.toggle('active', b === btn);
+      if (visited[b.dataset.tab]) b.classList.add('visited');
+    });
+    document.querySelectorAll('.tab').forEach(function(t){
+      t.classList.toggle('on', t.dataset.tab === tab);
+    });
+    updateProgress();
+    document.querySelector('.panel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+
+  function updateProgress(){
+    var n = Object.keys(visited).length;
+    document.getElementById('progressFill').style.width = Math.round((n/TAB_COUNT)*100) + '%';
+    document.getElementById('progressCount').textContent = n + ' of ' + TAB_COUNT + ' sections viewed';
+  }
+
+  /* ---------- Complete a section and advance to the next ---------- */
+  function completeSection(n){
+    var current = document.querySelector('.nav-btn[data-tab="' + n + '"]');
+    if (current) current.classList.add('visited');
+    var nextBtn = document.querySelector('.nav-btn[data-tab="' + (n + 1) + '"]');
+    if (nextBtn) showTab(nextBtn);
+  }
+
+  /* ---------- Go to a section (used by Previous buttons) ---------- */
+  function gotoSection(n){
+    var btn = document.querySelector('.nav-btn[data-tab="' + n + '"]');
+    if (btn) showTab(btn);
+  }
+
+  /* ---------- Email markers <-> indicator list ---------- */
+  var marks = document.querySelectorAll('.mk');
+  var rows  = document.querySelectorAll('.flag-row');
+
+  function setFlag(id){
+    marks.forEach(function(m){ m.classList.toggle('on', m.dataset.flag === id); });
+    rows.forEach(function(r){ r.classList.toggle('on', r.dataset.flag === id); });
+  }
+  marks.forEach(function(m){ m.addEventListener('click', function(){ setFlag(m.dataset.flag); }); });
+  rows.forEach(function(r){ r.addEventListener('click', function(){ setFlag(r.dataset.flag); }); });
+
+  /* ---------- Retake quiz: reload the embedded form ---------- */
+  function retakeQuiz(){
+    var frame = document.getElementById('quizFrame');
+    if (!frame) return;
+    /* Reassigning src forces a fresh reload of the form */
+    frame.src = frame.src;
+    frame.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  /* ---------- Acknowledgement ---------- */
+  function acknowledge(){
+    document.getElementById('ackDone').classList.add('on');
+    var b = document.getElementById('ackBtn');
+    b.disabled = true;
+    b.textContent = '\u2713  Recorded';
+  }
+
+  /* ---------- First vs repeat occurrence ----------
+     Default (no parameter) highlights the first-click card.
+     Append ?repeat=1 to the landing page URL for the repeat-clicker
+     group or campaign to highlight the second card instead.        */
+  (function(){
+    var isRepeat = new URLSearchParams(window.location.search).get('repeat') === '1';
+    document.getElementById('cardFirst').classList.toggle('on', !isRepeat);
+    document.getElementById('cardRepeat').classList.toggle('on', isRepeat);
+  })();
+</script>
+
+</body>
+</html>
